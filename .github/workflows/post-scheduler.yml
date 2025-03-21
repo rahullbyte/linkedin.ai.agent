@@ -2,8 +2,8 @@ name: LinkedIn Post Scheduler
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Daily at midnight UTC
-    - cron: "0 0-23/1 * * *" # Hourly (adjust as needed)
+   # - cron: "0 0 * * *" # Daily at midnight UTC
+   # - cron: "0 0-23/1 * * *" # Hourly (adjust as needed)
   workflow_dispatch:
 
 jobs:
