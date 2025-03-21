@@ -1,23 +1,24 @@
-interface InputFormProps {
-  onGenerate: () => void;
-  setPrompt: (prompt: string) => void;
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
-export default function InputForm({ onGenerate, setPrompt }: InputFormProps) {
+function InputForm({ onGenerate, setPrompt, loading }: { onGenerate: () => void; setPrompt: (prompt: string) => void; loading: boolean }) {
   return (
-    <div className="mb-6">
-      <input
-        type="text"
-        onChange={(e) => setPrompt(e.target.value)}
-        className="border p-2 w-full mb-2"
-        placeholder="Enter content prompt"
-      />
-      <button
-        onClick={onGenerate}
-        className="bg-blue-500 text-white p-2 rounded"
-      >
-        Generate
-      </button>
-    </div>
+    <Card className="p-4 border rounded-lg drop-shadow-lg">
+      <CardContent>
+        <Input
+          type="text"
+          onChange={(e) => setPrompt(e.target.value)}
+          className="mb-4"
+          placeholder="Enter content prompt"
+        />
+        <Button onClick={onGenerate} disabled={loading} className="bg-[#52B788] hover:bg-[#74C69D] text-[#D8F3DC] w-full">
+          {loading ? <Loader2 className="animate-spin" /> : "Generate"}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
+
+export default InputForm

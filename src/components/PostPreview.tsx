@@ -1,25 +1,27 @@
-interface PostPreviewProps {
-  content: string; // Changed from imageUrl to content
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-export default function PostPreview({ content }: PostPreviewProps) {
+function PostPreview({ content }: { content: string }) {
   const handlePost = async () => {
     await fetch("/api/linkedin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }), // Send content instead of imageUrl
+      body: JSON.stringify({ content }),
     });
   };
 
   return (
-    <div className="mt-6 p-4 border rounded">
-      <h1 className="mt-2 max-w-full h-auto">{content}</h1>
-      <button
-        onClick={handlePost}
-        className="mt-2 bg-green-500 text-white p-2 rounded"
-      >
-        Post to LinkedIn
-      </button>
-    </div>
+    <Card className="mt-6 p-4 border rounded-lg shadow ">
+      <CardContent className="max-h-60 overflow-y-auto p-2 ">
+        <p className="text-lg font-medium mb-4 text-[#081C15]">{content}</p>
+      </CardContent>
+      <div className="p-2">
+        <Button onClick={handlePost} className="bg-[#52B788] hover:bg-[#74C69D] w-full">
+          Post to LinkedIn
+        </Button>
+      </div>
+    </Card>
   );
 }
+
+export default PostPreview
