@@ -9,10 +9,14 @@ export async function POST(request: Request) {
     }
     const content = await generateContent(prompt);
     return NextResponse.json({ content });
-  } catch (error: any) {
-    console.error("API Error:", error);
+  } catch (error: unknown) {
+    let errorMessage = "An unexpected error occurred";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: `Failed to generate content: ${error.message}` },
+      { error: `Failed to generate content: ${errorMessage}` },
       { status: 500 }
     );
   }

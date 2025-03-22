@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function postToLinkedIn(content: string, imageUrl?: string) {
+export async function postToLinkedIn(content: string) {
   const accessToken = process.env.LINKEDIN_ACCESS_TOKEN!;
   const linkedinID = process.env.LINKEDIN_ID!;
   const url = "https://api.linkedin.com/v2/ugcPosts";
@@ -12,7 +12,6 @@ export async function postToLinkedIn(content: string, imageUrl?: string) {
       specificContent: {
         "com.linkedin.ugc.ShareContent": {
           shareCommentary: content,
-          shareMediaCategory: imageUrl ? "IMAGE" : "NONE",
         },
       },
       visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
