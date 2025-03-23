@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="container mx-auto max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6 text-[#D8F3DC]">Admin Panel</h1>
+      <h1 className="text-3xl font-bold mb-6 text-[#D8F3DC]">Linkedin AI Agent</h1>
       <InputForm onGenerate={generateContent} setPrompt={setPrompt} loading={loading} />
       {content && <PostPreview content={content} />}
       {timeLeft > 0 && <p className="mt-4 text-sm text-[#D8F3DC]">Time left: {timeLeft} min</p>}

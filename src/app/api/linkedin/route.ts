@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     let errorMessage = "An unexpected error occurred";
     if (error instanceof Error) {
       errorMessage = error.message;
+      console.error("Error details:", error);
     }
-
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: 500 }

@@ -5,13 +5,15 @@ const CHARACTER_LIMIT = 3000;
 
 function cleanGeneratedText(text: string): string {
   return text
-    .replace(/\*\*|__|[*#>]/g, '')
-    .replace(/\n\s*\n/g, '\n')
+    .replace(/\*\*|__|[*#>]/g, "")
+    .replace(/\n\s*\n/g, "\n")
     .trim();
 }
 
 async function validateLinkedInPost(content: string): Promise<boolean> {
-  const validationModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro-001" });
+  const validationModel = genAI.getGenerativeModel({
+    model: "gemini-1.5-pro-001",
+  });
 
   const validationPrompt = `
     You are an expert in LinkedIn content optimization. Validate the following LinkedIn post against these criteria:
@@ -23,6 +25,7 @@ async function validateLinkedInPost(content: string): Promise<boolean> {
     - If possible, should include a Call-To-Action (CTA) at the end.
     - Avoids offensive, misleading, or irrelevant content.
     - If hashtags are present, they should be relevant.
+    - Should be suitable for posting on LinkedIn.
 
     Return "VALID" if the post meets all criteria, otherwise return "INVALID".
 
@@ -33,16 +36,21 @@ async function validateLinkedInPost(content: string): Promise<boolean> {
 
   try {
     const result = await validationModel.generateContent(validationPrompt);
-    const responseText = result.response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const responseText =
+      result.response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     return responseText.trim().toUpperCase() === "VALID";
   } catch (error) {
     console.error("Validation failed:", error);
-    return false; 
+    return false;
   }
 }
 
-async function generateContentForLinkedIn(prompt: string, maxRetries = 3, delayMs = 1000): Promise<string> {
+async function generateContentForLinkedIn(
+  prompt: string,
+  maxRetries = 3,
+  delayMs = 1000
+): Promise<string> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-001" });
@@ -58,27 +66,40 @@ async function generateContentForLinkedIn(prompt: string, maxRetries = 3, delayM
       `;
 
       const result = await model.generateContent(refinedPrompt);
-      let text = result.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No content generated";
+      let text =
+        result.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "No content generated";
 
       if (text.length > CHARACTER_LIMIT) {
-        console.warn(`Generated content exceeds ${CHARACTER_LIMIT} characters. Trimming output.`);
+        console.warn(
+          `Generated content exceeds ${CHARACTER_LIMIT} characters. Trimming output.`
+        );
         text = text.slice(0, CHARACTER_LIMIT);
       }
 
       text = cleanGeneratedText(text);
 
       const isValid = await validateLinkedInPost(text);
-      if (!isValid) throw new Error("Generated content failed LinkedIn validation.");
+      if (!isValid)
+        throw new Error("Generated content failed LinkedIn validation.");
 
       return text;
-    } catch (error: any) {
-      if (attempt === maxRetries) {
-        console.error(`All retries failed: ${error.message}`);
-        return `Fallback content: Unable to generate due to validation failure. Please try again later.`;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (attempt === maxRetries) {
+          console.error(`All retries failed: ${error.message}`);
+          return `Fallback content: Unable to generate due to validation failure. Please try again later.`;
+        }
+        const waitTime = delayMs * Math.pow(2, attempt - 1);
+        console.warn(
+          `Attempt ${attempt} failed: ${error.message}. Retrying in ${waitTime}ms...`
+        );
+      } else {
+        console.error("An unknown error occurred:", error);
       }
-      const waitTime = delayMs * Math.pow(2, attempt - 1);
-      console.warn(`Attempt ${attempt} failed: ${error.message}. Retrying in ${waitTime}ms...`);
-      await new Promise((resolve) => setTimeout(resolve, waitTime));
+      await new Promise((resolve) =>
+        setTimeout(resolve, delayMs * Math.pow(2, attempt - 1))
+      );
     }
   }
   return "Fallback content: Generation failed after all retries.";
