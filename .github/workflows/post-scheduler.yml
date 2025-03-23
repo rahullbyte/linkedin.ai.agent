@@ -2,8 +2,7 @@ name: LinkedIn Post Scheduler
 
 on:
   schedule:
-   # - cron: "0 0 * * *" # Daily at midnight UTC
-   # - cron: "0 0-23/1 * * *" # Hourly (adjust as needed)
+    - cron: "0 10 * * 4"
   workflow_dispatch:
 
 jobs:
@@ -20,3 +19,4 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}

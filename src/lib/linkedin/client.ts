@@ -5,6 +5,10 @@ export async function postToLinkedIn(content: string) {
   const linkedinID = process.env.LINKEDIN_ID!;
   const url = "https://api.linkedin.com/v2/ugcPosts";
 
+  const aiFooter = "\n\n— Linkedin AI Agent 🤖";
+
+  const finalContent = `${content}${aiFooter}`;
+
   console.log("Posting with author URN:", `urn:li:person:${linkedinID}`);
 
   try {
@@ -16,7 +20,7 @@ export async function postToLinkedIn(content: string) {
         specificContent: {
           "com.linkedin.ugc.ShareContent": {
             shareCommentary: {
-              text: content,
+              text: finalContent,
             },
             shareMediaCategory: "NONE",
           },
@@ -41,7 +45,11 @@ export async function postToLinkedIn(content: string) {
         status: error.response?.status,
         data: error.response?.data,
       });
-      throw new Error(`LinkedIn API error: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `LinkedIn API error: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
     throw error;
   }
